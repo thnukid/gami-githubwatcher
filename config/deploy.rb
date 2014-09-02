@@ -37,10 +37,10 @@ namespace :deploy do
       ln -s #{shared_path}/log #{latest_release}/log
     CMD
 
-    if fetch(:normalize_asset_timestamps, true)
-      stamp = Time.now.utc.strftime("%Y%m%d%H%M.%S")
-      asset_paths = %w(images css).map { |p| "#{latest_release}/public/#{p}" }.join(" ")
-      run "find #{asset_paths} -exec touch -t #{stamp} {} ';'; true", :env => { "TZ" => "UTC" }
-    end
+    #if fetch(:normalize_asset_timestamps, true)
+      #stamp = Time.now.utc.strftime("%Y%m%d%H%M.%S")
+      #asset_paths = %w(images css).map { |p| "#{latest_release}/public/#{p}" }.join(" ")
+      #run "find #{asset_paths} -exec touch -t #{stamp} {} ';'; true", :env => { "TZ" => "UTC" }
+    #end
   end
 end
