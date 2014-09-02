@@ -1,11 +1,12 @@
 require "faraday"
 require 'json'
+require 'pry'
 
 module Gami
 
-  class Base
+  class GamiBase
     def connection
-      @connection ||= ::Faraday.new() do |faraday|
+      @connection ||= ::Faraday.new(:url => 'http://gami.kabisa.nl') do |faraday|
         faraday.request  :url_encoded             # form-encode POST params
         faraday.response :logger                  # log requests to STDOUT
         faraday.adapter  ::Faraday.default_adapter  # make requests with Net::HTTP
@@ -14,22 +15,32 @@ module Gami
 
   end
 
-  class Client < Base
-    
+  class Client < GamiBase
+
     def initialize(api_url = nil)
-      #@api_host = api_host || "http://localhost:4567/api/events"
-      @api_url = api_url || "https://api.github.com/users/thnukid"
+      @api_url = api_url || "api/events"
     end
 
-    def send_event(action,email,rawData)
+    def receive_event(action,email,rawData)
       output = connection.get @api_url
       json = output.body
       puts JSON.parse(json)
     end
+
+    def send_event(action,email,rawData)
+      connection.post do |req|
+        req.url @api_url
+        req.headers['Content-Type'] = 'application/json'
+        req.body = { :name => action, :email => email, :data => rawData}.to_json
+        puts req.body
+      end
+    end
+
+
   end
 
 end
 
 
 gami = Gami::Client.new()
-gami.send_event("test","test@test.de","")
+gami.send_event("test","h.musterman@githo.st","I am the gami client, ye")
