@@ -1,7 +1,5 @@
-require "faraday"
+require 'faraday'
 require 'json'
-require 'pry'
-
 module Gami
 
   class GamiBase
@@ -21,17 +19,21 @@ module Gami
       @api_url = api_url || "api/events"
     end
 
-    #def receive_event(action,email,rawData)
-      #output = connection.get @api_url
-      #json = output.body
-      #puts JSON.parse(json)
-    #end
+    def test
+      output = connection.get 'https://api.github.com/users/thnukid'
+      json = output.body
+      puts JSON.parse(json)
 
-    def send_event(action,email,rawData)
+      r = Response.new JSON.parse(json)
+
+      puts r.id
+      puts r.events_url
+    end
+
+    def send_event(action,email,rawData = '')
       connection.post do |req|
         req.url @api_url
         req.headers['Content-Type'] = 'application/json'
-        #req.body = { :name => action, :email => email, :data => rawData }.to_json
         req.body = { :event => {:name => action, :email => email, :data => rawData}}.to_json
         puts req.body
       end
@@ -41,6 +43,7 @@ module Gami
 end
 
 
-gami = Gami::Client.new()
-gami.send_event("gami:test","h.musterman@githo.st","I am the gami client, ye")
-gami.send_event("gami:test","works@gami.nl","I am the gami client, ye")
+#gami = Gami::Client.new()
+#gami.test
+#gami.send_event("gami:test","h.musterman@githo.st","I am the gami client, ye")
+#gami.send_event("gami:test","works@gami.nl","I am the gami client, ye")
