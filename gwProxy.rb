@@ -4,7 +4,6 @@ require 'bundler/setup'
 
 require 'sinatra'
 require 'json'
-require 'logger'
 
 
 get '/' do
@@ -12,6 +11,8 @@ get '/' do
 end
 
 post '/payload' do
+    #g = Gami::Client.new()
+    #g.send_event()
     push = JSON.parse(request.body.read)
     puts "I got some JSON: #{push.inspect}"
 end
