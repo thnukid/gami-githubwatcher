@@ -1,5 +1,6 @@
 require 'faraday'
 require 'json'
+
 module Gami
 
   class GamiBase
@@ -10,26 +11,12 @@ module Gami
         faraday.adapter  ::Faraday.default_adapter  # make requests with Net::HTTP
       end
     end
-
   end
 
   class Client < GamiBase
-
     def initialize(api_url = nil)
       @api_url = api_url || "api/events"
     end
-
-    def test
-      output = connection.get 'https://api.github.com/users/thnukid'
-      json = output.body
-      puts JSON.parse(json)
-
-      r = Response.new JSON.parse(json)
-
-      puts r.id
-      puts r.events_url
-    end
-
     def send_event(action,email,rawData = '')
       connection.post do |req|
         req.url @api_url
@@ -40,10 +27,69 @@ module Gami
     end
   end
 
+  class GithubEventParser
+    def initialize(client, event, rawData)
+      @client = client
+      @data = JSON.parse(rawData)
+      @raw = rawData
+      @event = event
+
+      @res = Hash.new
+      @res[:game] = Hash.new
+      @res[:raw] = rawData
+    end
+
+    def save
+      @client.send_event(@event, self.author, self.dataset)
+    end
+
+    def dataset
+      @res = Hash.new
+      @res[:game] = Hash.new
+
+      @res = {
+        "game" => self.compile_game_dataset,
+        "raw" => @raw
+      }
+    end
+
+    def compile_game_dataset
+      @res = {
+        "commits_count" => self.commits_count,
+        "commit_stats" => self.commit_stats,
+        "repo" => self.repository,
+        "message" => self.message
+      }
+    end
+
+    def author
+      @data['head_commit']['author']['email']
+    end
+
+    def commits_count
+      @data['commits'].length
+    end
+
+    def repository
+      @data['repository']['full_name']
+    end
+
+    def message
+      @data['head_commit']['message']
+    end
+
+    def commit_stats
+      stat = Hash.new
+      stat = {"rm_total" => 0, "add_total" => 0, "mod_total" => 0}
+
+      @data['commit'].each do |c|
+        stat[:rm_total]  += c['removed'].length
+        stat[:add_total] += c['added'].length
+        stat[:mod_total] += c['modified'].length
+      end
+      stat
+    end
+
+  end
 end
 
-
-#gami = Gami::Client.new()
-#gami.test
-#gami.send_event("gami:test","h.musterman@githo.st","I am the gami client, ye")
-#gami.send_event("gami:test","works@gami.nl","I am the gami client, ye")
