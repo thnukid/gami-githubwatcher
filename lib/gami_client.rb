@@ -43,7 +43,7 @@ module Gami
     end
 
     def save
-      @client.send_event(@event, author, dataset)
+      @client.send_event(@event, author, dataset.to_json)
     end
 
     def dataset
