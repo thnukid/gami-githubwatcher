@@ -2,5 +2,8 @@ source 'https://rubygems.org'
 
 gem 'sinatra'
 gem 'faraday'
-gem 'rspec'
-gem 'pry'
+
+group :test,:developement do
+  gem 'rspec'
+  gem 'pry'
+end
