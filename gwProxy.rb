@@ -2,7 +2,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require './lib/gamiClient'
+require './lib/gami_client'
 require 'sinatra'
 require 'json'
 
