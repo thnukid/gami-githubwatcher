@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'faraday'
 
-group :test,:developement do
+group :test,:development do
   gem 'rspec'
   gem 'pry'
 end

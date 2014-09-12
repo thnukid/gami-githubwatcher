@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 describe Gami::GithubEventParser do
-  subject {described_class.new(client,event,raw)}
 
   let(:client){Gami::Client.new}
   let(:event){"git:push"}
   let(:raw){File.open(File.expand_path('../../fixtures/github_payload.json', __FILE__)).read}
+  let(:faraday) {Faraday::Response.new}
+  subject {described_class.new(client,event,raw)}
 
   it 'should load the github payload' do
     expect(raw).to match (/Eric Claus Bartholemy/)
@@ -19,8 +20,12 @@ describe Gami::GithubEventParser do
     it {expect(subject.dataset[:raw]).to eql(raw)}
   end
 
-  it 'should send the data via the client' do
-    expect(true).to be(true)
+  describe 'should send the data via the client' do
+    it {
+      #expect(subject).to receive(:save)
+      expect(client).to receive(:send_event)
+      subject.save
+    }
   end
 end
 
