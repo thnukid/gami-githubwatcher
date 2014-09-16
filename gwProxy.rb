@@ -18,6 +18,5 @@ post '/github' do
     when "push"
       gParse = Gami::GithubEventParser.new(gami,"git:push", @payload)
       gParse.save
-      #gami.send_event(gamiEvent, gamiMail, gamiData.to_json)
     end
 end
