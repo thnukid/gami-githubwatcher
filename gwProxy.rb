@@ -14,9 +14,12 @@ post '/github' do
   @payload = request.body.read
   gami = Gami::Client.new()
 
-  case request.env['HTTP_X_GITHUB_EVENT']
-    when "push"
-      gParse = Gami::GithubEventParser.new(gami,"git:push", @payload)
-      gParse.save
-    end
+  @gitEvent =  request.env['HTTP_X_GITHUB_EVENT']
+
+  if (@gitEvent == "push")
+    gParse = Gami::GithubEventParser.new(gami,"git:push", @payload)
+  else
+    gParse = Gami::GithubEventParser.new(gami,"git:" + @gitEvent.to_s , @payload)
+  end
+    gParse.save unless gParse.nil?
 end
