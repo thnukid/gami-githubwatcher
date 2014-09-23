@@ -14,6 +14,7 @@ post '/github' do
   @payload = request.body.read
   gami = Gami::Client.new()
 
+<<<<<<< HEAD
   @gitEvent =  request.env['HTTP_X_GITHUB_EVENT']
 
   if (@gitEvent == "push")
@@ -22,4 +23,12 @@ post '/github' do
     gParse = Gami::GithubEventParser.new(gami,"git:" + @gitEvent.to_s , @payload)
   end
     gParse.save unless gParse.nil?
+=======
+  case request.env['HTTP_X_GITHUB_EVENT']
+    when "push"
+      gParse = Gami::GithubEventParser.new(gami,"git:push", @payload)
+      gParse.save
+      #gami.send_event(gamiEvent, gamiMail, gamiData.to_json)
+    end
+>>>>>>> parent of 4f7091e... minor clean up
 end
