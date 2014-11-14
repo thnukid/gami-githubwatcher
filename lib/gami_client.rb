@@ -28,7 +28,52 @@ module Gami
     end
   end
 
-  class GithubEventParser
+  class GithubWatchParser
+    def initialize(client, event, rawData)
+      @client = client
+      @data = JSON.parse(rawData)
+
+      @raw = rawData
+      @event = event
+
+      @res = Hash.new
+      @res[:game] = Hash.new
+      @res[:raw] = rawData
+    end
+
+    def save
+      @client.send_event(@event, author, dataset.to_json)
+    end
+
+    def dataset
+      {
+        :game => compile_game_dataset,
+        :raw => @raw
+      }
+    end
+
+    def compile_game_dataset
+      {
+        :star_count => 1,
+        :star_count_total => @data['repository']['stargazers_count'],
+        :repo_name => @data['repository']['full_name'],
+        :repo_ruby => repo_ruby 
+      }
+    end
+
+    def repo_ruby
+      1 if @data['repository']['language'] == 'Ruby'
+
+    end
+    def author
+      if @data['repository']['owner']['login'] == "thnukid"
+        "thnukid@users.noreply.github.com"
+      end
+    end 
+  end
+
+
+  class GithubPushParser
 
     def initialize(client, event, rawData)
       @client = client

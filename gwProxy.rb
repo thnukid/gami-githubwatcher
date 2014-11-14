@@ -16,7 +16,10 @@ post '/github' do
 
   case request.env['HTTP_X_GITHUB_EVENT']
     when "push"
-      gParse = Gami::GithubEventParser.new(gami,"git:push", @payload)
+      gParse = Gami::GithubPushParser.new(gami,"git:push", @payload)
+      gParse.save
+    when "push"
+      gParse = Gami::GithubWatchParser.new(gami,"git:watch", @payload)
       gParse.save
     end
 end
