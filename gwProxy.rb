@@ -18,8 +18,10 @@ post '/github' do
     when "push"
       gParse = Gami::GithubPushParser.new(gami,"git:push", @payload)
       gParse.save
-    when "push"
+      body 'forward a push event'
+    when "watch"
       gParse = Gami::GithubWatchParser.new(gami,"git:watch", @payload)
       gParse.save
+      body 'forward a star watcher'
     end
 end
